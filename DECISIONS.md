@@ -10,3 +10,8 @@ Jedna linijka: decyzja + powód.
 - JUnit 5 (5.14.x), nie 6: tak mówi `CONTEXT.md`.
 - Pakiet bazowy `io.github.karol2846.modularizator`: konwencja dla projektów na GitHubie.
 - `run` bez argumentów wypisuje usage i kończy się kodem 0; błędne argumenty: komunikat, usage i kod 2.
+
+## Krok 1: odczyt historii
+- Ścieżki, które git cytuje mimo `core.quotepath=false` (znaki sterujące, `"`, `\`), nie są odkodowywane: w plikach `.java` praktycznie nie występują, a `ls-tree` i `log` cytują je tak samo, więc mapowanie pozostaje spójne.
+- Ostrzeżenie o rename detection rozpoznajemy po linii stderr zawierającej `rename detection was skipped` (obejmuje wariant „inexact” i „exhaustive”); git nie mówi, którego commita dotyczy, więc raportujemy tylko liczbę i treść.
+- Statusy spoza `A/M/D/T/R###` (np. `C`, `U`, `X`) rzucają wyjątkiem z treścią linii, zgodnie z planem.
