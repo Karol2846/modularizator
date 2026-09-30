@@ -21,3 +21,8 @@ Jedna linijka: decyzja + powód.
 - Wszystkie zmiany w commicie rozwiązujemy mapą sprzed tego commita, a jego rename'y aplikujemy dopiero potem: rename dotyczy tylko starszych commitów (np. `R a→b` + `A a` w jednym commicie nie myli plików).
 - „Rozpoznane rename'y” to liczba starych ścieżek zmapowanych na plik z HEAD, który przechodzi filtr (`.java` w `src/main/java/`): liczymy tylko to, co wpływa na analizę.
 - Zakres dat w statystykach to najstarszy i najnowszy **zachowany** changeset (po `%at`, czyli dacie autora); 0, gdy nic nie zachowano.
+
+## Krok 3: coupling
+- `weight` w `pairs.tsv` zaokrąglone do 2 miejsc (`Locale.ROOT`), ale sortowanie i progi liczone na dokładnej wartości.
+- Dowody (changesety pary) trzymane w kolejności logu, czyli od najnowszego.
+- Dopóki nie ma raportu (krok 5), `Main` wypisuje statystyki na stdout i zapisuje tylko `pairs.tsv`.
