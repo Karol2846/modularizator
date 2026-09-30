@@ -40,7 +40,7 @@ Repozytoria docelowe klonujemy **z pełną historią** (bez `--depth`) i **poza*
 
 | Obszar | Decyzja | Uzasadnienie |
 |---|---|---|
-| Język / build | Java 21, Gradle (Groovy lub Kotlin DSL), jeden moduł | Stack, który Karol zna, a biblioteka Leiden jest w Javie. |
+| Język / build | Java 25, Gradle (Groovy lub Kotlin DSL), jeden moduł | Stack, który Karol zna, a biblioteka Leiden jest w Javie. (Zmienione z Java 21 na prośbę Karola.) |
 | Zależności runtime | **Tylko** `nl.cwts:networkanalysis:1.3.0` | Referencyjna implementacja Leidena od autorów algorytmu. Bez Springa, picocli i JGit. |
 | Zależności testowe | JUnit 5 + AssertJ | Prosto i standardowo. |
 | Źródło historii | Proces `git` uruchamiany przez `ProcessBuilder`, wynik parsowany tekstowo | Najprościej. JGit może kiedyś później. |

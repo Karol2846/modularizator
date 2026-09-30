@@ -22,7 +22,7 @@ Proponowany układ pakietów (sugestia, nie dogmat): `git`, `changeset`, `coupli
 
 ## Krok 0: szkielet projektu
 
-- Gradle, Java 21 (toolchain), plugin `application`, jeden moduł.
+- Gradle, Java 25 (toolchain), plugin `application`, jeden moduł.
 - Zależności: `nl.cwts:networkanalysis:1.3.0`, testowo JUnit 5 i AssertJ.
 - `Main` z ręcznym parsowaniem argumentów:
 
