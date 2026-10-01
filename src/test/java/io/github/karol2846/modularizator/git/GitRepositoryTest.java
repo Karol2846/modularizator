@@ -17,7 +17,7 @@ class GitRepositoryTest {
                 .write("README.md", "readme\n")
                 .commit("Initial")
                 .write("src/main/java/org/x/Foo.java", "class Foo { int a; }\n")
-                .commit("Zmiana żółć")
+                .commit("Tweak naïve café")
                 .move("src/main/java/org/x/Foo.java", "src/main/java/org/y/Foo.java")
                 .commit("Move Foo")
                 .git("rm", "-q", "README.md")
@@ -29,7 +29,7 @@ class GitRepositoryTest {
         assertThat(repository.headFiles()).containsExactly("src/main/java/org/y/Foo.java");
         assertThat(log.renameWarnings()).isEmpty();
         assertThat(log.commits()).extracting(RawCommit::subject)
-                .containsExactly("Remove readme", "Move Foo", "Zmiana żółć", "Initial");
+                .containsExactly("Remove readme", "Move Foo", "Tweak naïve café", "Initial");
         assertThat(log.commits()).allSatisfy(commit -> {
             assertThat(commit.hash()).hasSize(40);
             assertThat(commit.epochSeconds()).isPositive();

@@ -53,12 +53,12 @@ class GitLogParserTest {
 
     @Test
     void keepsTabsAndUtf8InSubject() {
-        String log = header("ddd", 5, "Fix\tzażółć gęślą jaźń ✓") + "M\tpaczka/Żółw.java\n";
+        String log = header("ddd", 5, "Fix\tcafé naïve résumé ✓") + "M\tpkg/Café.java\n";
 
         RawCommit commit = GitLogParser.parse(log).getFirst();
 
-        assertThat(commit.subject()).isEqualTo("Fix\tzażółć gęślą jaźń ✓");
-        assertThat(commit.changes()).containsExactly(FileChange.of(Status.MODIFIED, "paczka/Żółw.java"));
+        assertThat(commit.subject()).isEqualTo("Fix\tcafé naïve résumé ✓");
+        assertThat(commit.changes()).containsExactly(FileChange.of(Status.MODIFIED, "pkg/Café.java"));
     }
 
     @Test
