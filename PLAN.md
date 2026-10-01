@@ -2,6 +2,12 @@
 
 > Read `CONTEXT.md` first. This file says **what** to do and **in what order**; `CONTEXT.md` says **why** and what **not** to do.
 
+## Status
+
+- Steps 0–3 done; 🛑 Checkpoint 1 passed. **Next: step 4.**
+- Karol's decision at Checkpoint 1: no tuning or fixes to thresholds, weights or filters yet. Run the pipeline as specified end to end first, then tune.
+- Targets are cloned in `../targets/` (not in the repo); re-clone with full history if missing.
+
 ## Working rules
 
 - Work through the steps in the given order. After each step: tests pass, commit describing the step.
