@@ -62,6 +62,20 @@ record ClusterSummary(int id, List<FileInfo> files, List<Count> packages, List<C
         edges = List.copyOf(edges);
     }
 
+    /**
+     * How a file is named in edge tables: just the file name (e.g. {@code Foo.java}), since the cluster's full
+     * paths are listed above, or the full path when another file in the cluster has the same name.
+     */
+    String label(FileInfo file) {
+        String name = fileName(file);
+        long sameName = files.stream().filter(other -> fileName(other).equals(name)).count();
+        return sameName > 1 ? file.path() : name;
+    }
+
+    private static String fileName(FileInfo file) {
+        return file.path().substring(file.path().lastIndexOf('/') + 1);
+    }
+
     /** The module with most files; ties go to the lexicographically first one. */
     String dominantModule() {
         return modules.getFirst().name();

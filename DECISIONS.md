@@ -45,3 +45,9 @@ One line each: decision + reason.
 - The resolution is printed with `Double.toString` (`1.0`), both in section headings and in `clusters-r1.0.tsv`.
 - HEAD is shown as the full 40-character hash; evidence commits as 7-character short hashes with the UTC author date.
 - Commit subjects are copied verbatim (no Markdown escaping).
+- Edge tables name a file by its file name only when that name is unique in the cluster, otherwise by its full path: on JUnit, clusters of `module-info.java` files rendered as an unreadable `module-info.java` – `module-info.java`.
+
+## Step 6: real repositories
+- `results/junit` was regenerated at the current JUnit HEAD (`7fb2ce2b1`), replacing the Checkpoint 1 `pairs.tsv`; the report states the HEAD it was made from.
+- The default JVM heap is enough (peak RSS about 300 MB on JabRef), so `applicationDefaultJvmArgs` stays unset.
+- Execution time and memory were measured with `/usr/bin/time -v` around the installed start script (`./gradlew installDist`), so Gradle start-up is not included.

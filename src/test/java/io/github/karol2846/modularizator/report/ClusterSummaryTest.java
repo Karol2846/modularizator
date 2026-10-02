@@ -30,4 +30,16 @@ class ClusterSummaryTest {
         assertThat(cluster.modules()).extracting(ClusterSummary.Count::name).containsExactly("a", "b");
         assertThat(cluster.dominantModule()).isEqualTo("a");
     }
+
+    @Test
+    void labelIsFileNameUnlessAmbiguousInCluster() {
+        LeidenClusterer.Result result = new LeidenClusterer.Result(1.0, Map.of(
+                "a/src/main/java/module-info.java", 0, "b/src/main/java/module-info.java", 0,
+                "a/src/main/java/p/Foo.java", 0), 1, 0.5);
+
+        ClusterSummary cluster = ClusterSummary.of(result, List.of()).getFirst();
+
+        assertThat(cluster.files()).extracting(cluster::label).containsExactly(
+                "a/src/main/java/module-info.java", "Foo.java", "b/src/main/java/module-info.java");
+    }
 }

@@ -4,7 +4,7 @@
 
 ## Status
 
-- Steps 0–4 done; 🛑 Checkpoint 1 passed. **Next: step 5.**
+- Steps 0–6 done; 🛑 Checkpoint 1 passed. **Now: 🛑 Checkpoint 2, waiting for Karol.** Step 7 comes after that.
 - Karol's decision at Checkpoint 1: no tuning or fixes to thresholds, weights or filters yet. Run the pipeline as specified end to end first, then tune.
 - Targets are cloned in `../targets/` (not in the repo); re-clone with full history if missing.
 

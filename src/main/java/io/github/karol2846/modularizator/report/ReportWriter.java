@@ -1,7 +1,6 @@
 package io.github.karol2846.modularizator.report;
 
 import io.github.karol2846.modularizator.changeset.Changeset;
-import io.github.karol2846.modularizator.changeset.FileInfo;
 import io.github.karol2846.modularizator.changeset.HistoryStats;
 import io.github.karol2846.modularizator.clustering.LeidenClusterer;
 import io.github.karol2846.modularizator.coupling.CoChangeEdge;
@@ -218,12 +217,12 @@ public final class ReportWriter {
         line("| fileA | fileB | shared | weight |");
         line("|---|---|---|---|");
         cluster.edges().stream().limit(EDGES_PER_CLUSTER).forEach(edge ->
-                line("| " + code(className(edge.fileA())) + " | " + code(className(edge.fileB())) + " | "
+                line("| " + code(cluster.label(edge.fileA())) + " | " + code(cluster.label(edge.fileB())) + " | "
                         + edge.shared() + " | " + decimal(edge.weight()) + " |"));
         line();
         CoChangeEdge strongest = cluster.edges().getFirst();
-        line("Evidence for the strongest edge (" + code(className(strongest.fileA())) + " – "
-                + code(className(strongest.fileB())) + ", up to " + EVIDENCE_COMMITS + " commits, newest first):");
+        line("Evidence for the strongest edge (" + code(cluster.label(strongest.fileA())) + " – "
+                + code(cluster.label(strongest.fileB())) + ", up to " + EVIDENCE_COMMITS + " commits, newest first):");
         line();
         strongest.evidence().stream().limit(EVIDENCE_COMMITS).forEach(changeset ->
                 line("- " + code(shortHash(changeset)) + " " + date(changeset.epochSeconds()) + " — "
@@ -246,7 +245,7 @@ public final class ReportWriter {
             }
             CoChangeEdge strongest = cluster.edges().getFirst();
             line(sizes
-                    + " | " + code(className(strongest.fileA())) + " – " + code(className(strongest.fileB()))
+                    + " | " + code(cluster.label(strongest.fileA())) + " – " + code(cluster.label(strongest.fileB()))
                     + " | " + strongest.shared() + " | " + decimal(strongest.weight())
                     + " | " + strongest.evidence().stream().limit(EVIDENCE_COMMITS_CONDENSED)
                             .map(changeset -> code(shortHash(changeset)))
@@ -291,10 +290,6 @@ public final class ReportWriter {
 
     private static String code(String text) {
         return "`" + text + "`";
-    }
-
-    private static String className(FileInfo file) {
-        return file.path().substring(file.path().lastIndexOf('/') + 1);
     }
 
     private static String shortHash(Changeset changeset) {
