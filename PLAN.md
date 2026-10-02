@@ -4,7 +4,8 @@
 
 ## Status
 
-- Steps 0–6 done; 🛑 Checkpoint 1 passed. **Now: 🛑 Checkpoint 2, waiting for Karol.** Step 7 comes after that.
+- Steps 0–6 done; 🛑 Checkpoints 1 and 2 passed. **Next: step 7.**
+- Karol's decisions at Checkpoint 2: keep `module-info.java` and `package-info.java` in the analysis for now (simplicity; maybe filtered out later); the report-only decisions from step 5–6 in `DECISIONS.md` are accepted.
 - Karol's decision at Checkpoint 1: no tuning or fixes to thresholds, weights or filters yet. Run the pipeline as specified end to end first, then tune.
 - Targets are cloned in `../targets/` (not in the repo); re-clone with full history if missing.
 
