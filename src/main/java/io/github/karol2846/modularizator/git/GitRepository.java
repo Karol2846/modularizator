@@ -29,6 +29,10 @@ public final class GitRepository {
     public record GitLog(List<RawCommit> commits, List<String> renameWarnings) {
     }
 
+    public String headHash() {
+        return run(List.of("rev-parse", "HEAD"), reader -> reader.lines().findFirst().orElseThrow()).stdout();
+    }
+
     public Set<String> headFiles() {
         return run(List.of("ls-tree", "-r", "--name-only", "HEAD"),
                 reader -> reader.lines().collect(Collectors.toUnmodifiableSet()))

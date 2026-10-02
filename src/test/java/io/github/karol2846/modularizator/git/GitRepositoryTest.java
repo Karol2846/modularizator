@@ -26,6 +26,7 @@ class GitRepositoryTest {
         GitRepository repository = new GitRepository(dir);
         GitLog log = repository.log();
 
+        assertThat(repository.headHash()).isEqualTo(log.commits().getFirst().hash());
         assertThat(repository.headFiles()).containsExactly("src/main/java/org/y/Foo.java");
         assertThat(log.renameWarnings()).isEmpty();
         assertThat(log.commits()).extracting(RawCommit::subject)

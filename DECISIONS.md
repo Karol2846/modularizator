@@ -25,7 +25,6 @@ One line each: decision + reason.
 ## Step 3: coupling
 - `weight` in `pairs.tsv` is rounded to 2 decimal places (`Locale.ROOT`), but sorting and thresholds use the exact value.
 - Evidence (a pair's changesets) is kept in log order, i.e. newest first.
-- Until there is a report (step 5), `Main` prints the statistics to stdout and only writes `pairs.tsv`; each printed number comes with a one-sentence explanation.
 
 ## Step 4: graph and Leiden
 - Graph edge weight is the exact coupling weight (`shared / min(revs)`), not the 2-decimal value from `pairs.tsv`.
@@ -33,4 +32,22 @@ One line each: decision + reason.
 - The reported quality is `LeidenAlgorithm.calcQuality` with the rescaled resolution, i.e. modularity with resolution parameter γ; values for different resolutions are therefore not directly comparable.
 - Cluster ids come from `orderClustersByNNodes()` (0 = largest); the order of clusters in the report is a separate rule from step 5.
 - A graph with no edges skips the library and yields no clusters: the modularity resolution would divide by a total edge weight of 0.
-- Until there is a report (step 5), `Main` prints a per-resolution summary to stdout; `clusters-r*.tsv` is written together with `report.md` in step 5.
+
+## Step 5: report
+- Every number moved from stdout into `report.md`; stdout now only shows where the report went and the elapsed time (kept out of the report for determinism).
+- Clusters beyond the first 15 go into the condensed table with their strongest edge, its `shared`/`weight` and the newest 3 evidence commits: the Definition of Done requires evidence for every cluster in the report.
+- Single-file clusters are not listed, only counted in the per-resolution summary; they are all in `clusters-r*.tsv`.
+- Build module agreement is computed over files in clusters with ≥2 files: a single-file cluster always agrees with itself and would inflate the value.
+- Dominant module of a cluster: the module with most files, ties go to the lexicographically first one (the other files count as not agreeing).
+- Packages and modules of a cluster are listed with file counts, most files first, then by name; the modules line is an addition to the plan's structure, so module agreement can be checked by eye.
+- The top cross-package pairs table uses full paths (there is no file list above it to shorten against); edge tables inside clusters use class names, as in the plan.
+- The modularity value is shown in each resolution section with its own explanation.
+- The resolution is printed with `Double.toString` (`1.0`), both in section headings and in `clusters-r1.0.tsv`.
+- HEAD is shown as the full 40-character hash; evidence commits as 7-character short hashes with the UTC author date.
+- Commit subjects are copied verbatim (no Markdown escaping).
+- Edge tables name a file by its file name only when that name is unique in the cluster, otherwise by its full path: on JUnit, clusters of `module-info.java` files rendered as an unreadable `module-info.java` – `module-info.java`.
+
+## Step 6: real repositories
+- `results/junit` was regenerated at the current JUnit HEAD (`7fb2ce2b1`), replacing the Checkpoint 1 `pairs.tsv`; the report states the HEAD it was made from.
+- The default JVM heap is enough (peak RSS about 300 MB on JabRef), so `applicationDefaultJvmArgs` stays unset.
+- Execution time and memory were measured with `/usr/bin/time -v` around the installed start script (`./gradlew installDist`), so Gradle start-up is not included.
