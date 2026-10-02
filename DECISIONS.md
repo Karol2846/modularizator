@@ -26,3 +26,11 @@ One line each: decision + reason.
 - `weight` in `pairs.tsv` is rounded to 2 decimal places (`Locale.ROOT`), but sorting and thresholds use the exact value.
 - Evidence (a pair's changesets) is kept in log order, i.e. newest first.
 - Until there is a report (step 5), `Main` prints the statistics to stdout and only writes `pairs.tsv`; each printed number comes with a one-sentence explanation.
+
+## Step 4: graph and Leiden
+- Graph edge weight is the exact coupling weight (`shared / min(revs)`), not the 2-decimal value from `pairs.tsv`.
+- The network is built directly with `new Network(nNodes, true, edges, weights, false, true)`, the same constructor `FileIO.readEdgeList` uses: each edge is passed once (unsorted) and the library adds the reverse direction; no temporary edge-list file.
+- The reported quality is `LeidenAlgorithm.calcQuality` with the rescaled resolution, i.e. modularity with resolution parameter γ; values for different resolutions are therefore not directly comparable.
+- Cluster ids come from `orderClustersByNNodes()` (0 = largest); the order of clusters in the report is a separate rule from step 5.
+- A graph with no edges skips the library and yields no clusters: the modularity resolution would divide by a total edge weight of 0.
+- Until there is a report (step 5), `Main` prints a per-resolution summary to stdout; `clusters-r*.tsv` is written together with `report.md` in step 5.

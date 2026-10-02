@@ -2,6 +2,8 @@ package io.github.karol2846.modularizator;
 
 import io.github.karol2846.modularizator.changeset.ChangesetBuilder;
 import io.github.karol2846.modularizator.changeset.HistoryStats;
+import io.github.karol2846.modularizator.clustering.CoChangeGraph;
+import io.github.karol2846.modularizator.clustering.LeidenClusterer;
 import io.github.karol2846.modularizator.coupling.CoChangeEdge;
 import io.github.karol2846.modularizator.coupling.CouplingCalculator;
 import io.github.karol2846.modularizator.coupling.CouplingCalculator.Coupling;
@@ -13,7 +15,13 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public final class Main {
 
@@ -54,11 +62,18 @@ public final class Main {
         }
         PairsTsvWriter.write(config.out().resolve("pairs.tsv"), coupling.edges());
 
-        printSummary(config, log, history.stats(), coupling, (System.nanoTime() - start) / 1_000_000);
+        CoChangeGraph graph = CoChangeGraph.of(coupling.edges());
+        List<LeidenClusterer.Result> clusterings = new ArrayList<>();
+        for (double resolution : config.resolutions()) {
+            clusterings.add(LeidenClusterer.cluster(graph, resolution, config.seed()));
+        }
+
+        printSummary(config, log, history.stats(), coupling, graph, clusterings,
+                (System.nanoTime() - start) / 1_000_000);
     }
 
-    private static void printSummary(
-            AnalysisConfig config, GitLog log, HistoryStats stats, Coupling coupling, long elapsedMillis) {
+    private static void printSummary(AnalysisConfig config, GitLog log, HistoryStats stats, Coupling coupling,
+            CoChangeGraph graph, List<LeidenClusterer.Result> clusterings, long elapsedMillis) {
         line("Repository", config.repo(), "The git repository that was analyzed.");
         line("Commits read", stats.commitsRead(), "Non-merge commits reachable from HEAD.");
         line("Changesets kept", stats.changesetsKept(),
@@ -83,7 +98,29 @@ public final class Main {
         line("Rename warnings", log.renameWarnings().size(),
                 "Times git gave up on rename detection, so some moved files may have lost history.");
         log.renameWarnings().forEach(warning -> System.out.println("    " + warning));
+        line("Graph nodes", graph.nodes().size(), "Files with at least one edge; only these are clustered.");
+        line("Files without edges", stats.uniqueFiles() - graph.nodes().size(),
+                "Files that changed but never often enough together with any other file; left out of the graph.");
+        for (LeidenClusterer.Result result : clusterings) {
+            printClustering(result);
+        }
         line("Elapsed", elapsedMillis + " ms", "Wall-clock time of the whole run.");
+    }
+
+    private static void printClustering(LeidenClusterer.Result result) {
+        Collection<Long> sizes = result.clusters().values().stream()
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .values();
+        System.out.println();
+        System.out.println("Resolution " + result.resolution());
+        line("  Clusters (>= 2 files)", sizes.stream().filter(size -> size >= 2).count(),
+                "Groups of files that Leiden put together because they are densely connected by co-change.");
+        line("  Largest cluster", sizes.stream().mapToLong(Long::longValue).max().orElse(0) + " files",
+                "Size of the biggest group; a very large one may be held together by a hub file.");
+        line("  Single-file clusters", sizes.stream().filter(size -> size == 1).count(),
+                "Nodes that Leiden did not group with any other file at this resolution.");
+        line("  Modularity", String.format(Locale.ROOT, "%.2f", result.quality()),
+                "How much denser the links are inside clusters than expected by chance (higher = sharper split).");
     }
 
     private static void line(String label, Object value, String explanation) {
